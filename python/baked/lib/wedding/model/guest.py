@@ -3,7 +3,6 @@ from baked.lib.model import Model
 
 class Guest(Model):
     _attributes = {
-        "id": int,
         "email": str,
         "firstname": str,
         "invite": str,
@@ -46,21 +45,18 @@ class Guest(Model):
                 "firstname": self.firstname,
                 "lastname": self.lastname,
                 "invite": self.invite,
-                "rsvp": self.rsvp
+                "rsvp": self.rsvp,
+                "email": self.email
             }
 
         return {
-            "id": self.id,
             "firstname": self.firstname,
             "lastname": self.lastname,
             "invite": self.invite,
             "rsvp": self.rsvp,
-            "user_id": self.user_id
+            "user_id": self.user_id,
+            "email": self.email
         }
-
-    @property
-    def id(self):
-        return self._id
     
     @property
     def email(self):

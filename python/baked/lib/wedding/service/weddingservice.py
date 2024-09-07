@@ -27,27 +27,26 @@ class WeddingService:
     def _get_column_model(self, guest: Optional[Dict] = None, filters: Optional[Dict] = None):
         column_class = ColumnFactory.get(self._driver)
 
-        if not guest:
-            columns = {c: None for c in self._db.get_columns(self._table)}
-        elif filters:
+        if filters:
             columns = [column_class(k, Guest.get_sql_datatype(k), value=v) for k, v in filters.items()]
+        elif not guest:
+            columns = [column_class(c, Guest.get_sql_datatype(c)) for c in Guest.attribute_map()]
         else:
             columns = [
                 column_class(key, Guest.get_sql_datatype(key), value=value)
                 for key, value in guest.items()
             ]
 
-        ColumnModelFactory.get(self._driver)(columns) 
+        return ColumnModelFactory.get(self._driver)(columns) 
     
     def list_guests(self):
         guests = self._db.get(self._table, self._get_column_model())
         return [Guest(**g) for g in guests]
 
-    def get_guest(self, guest_id: Optional[int] = None, email: Optional[str] = None) -> Union[Guest, None]:
-        if guest_id:
-            filters = {"id": guest_id}
-        elif email:
-            filters = {"email": email}
+    def get_guest(self, email: str, user_id: Optional[int] = None) -> Union[Guest, None]:
+        filters = {"email": email}
+        if user_id is not None:
+            filters["user_id"] = user_id
 
         column_model = self._get_column_model(filters=filters)
 
@@ -55,16 +54,20 @@ class WeddingService:
         filters = [filter_class(c, "equalto") for c in column_model.columns]
         filter_model = AndFilterModel(filters)
 
-        guest = self._db.get(self._table, column_model, filter_model=filter_model)
+        guest = self._db.get(self._table, self._get_column_model(), filter_model=filter_model)
         if not guest:
             return None
 
         return Guest(**guest[0])
     
     def create_guest(self, guest: Guest) -> Guest:
-        if self.get_guest(email=guest.email):
+        if guest.invite.upper() not in self._valid_rsvp[:-2]:
+            raise ValueError("Guest has invalid invite")
+
+        if self.get_guest(guest.email):
             raise ValueError("Guest already exists")
         
+        guest: Dict = guest.to_dict()
         column_model = self._get_column_model(guest=guest)
         self._db.insert_get(self._table, column_model)
 
@@ -75,9 +78,10 @@ class WeddingService:
             raise ValueError("Invalid RSVP value")
 
         guest.rsvp = rsvp
-        guest: Dict = guest.to_dict()
+        guest_payload: Dict = guest.to_dict()
 
-        self._db.update(
+        self._db.update_where(
             self._table,
-            self._get_column_model(guest=guest)
+            self._get_column_model(guest=guest_payload),
+            ["email"]
         )

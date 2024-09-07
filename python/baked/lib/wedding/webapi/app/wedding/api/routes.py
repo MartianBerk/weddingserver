@@ -57,19 +57,19 @@ def guest():
             if key not in body:
                 return response({"error": True, "message": "Invalid payload"}), 500
         
-        all_guests = service.list_guests()
-        guest = Guest(id=len(all_guests) + 1, **body)
+        guest = Guest(**body)
         service.create_guest(guest)
 
         return response({"guest": guest.to_dict()}), 200
 
     if request.method == "GET":
-        guest_id = request.args.get("id")
-        if not guest_id:
-            return response({"error": True, "message": "Invalid request"}), 500
+        email = request.args.get("email")
+        if not email:
+            guests = service.list_guests()
+            return response({"guests": [g.to_dict() for g in guests]}), 200
 
-        guest: Guest = service.get_guest(guest_id)
-        return response({"guest": guest.to_dict()}), 200
+        guest: Guest = service.get_guest(email)
+        return response({"guest": guest.to_dict() if guest else {}}), 200
 
 
 @wedding.route("/rsvp", methods=["POST"])
@@ -78,17 +78,21 @@ def rsvp():
     if "rsvp" not in body:
         return response({"error": True, "message": "Invalid payload"}), 500
     
+    # Locked URI, must have supplied to have gotten this far, unless tampering.
+    uid = request.cookies.get("bkuid")
+    
     guest_rsvps = []
     service = WeddingService()
     
     for r in body["rsvp"]:
-        if "guest_id" not in r or "rsvp" not in r:
+        if "email" not in r or "rsvp" not in r:
             return response({"error": True, "message": "Invalid payload"}), 500
         
         if r["rsvp"].upper() not in service.valid_rsvp:
             return response({"error": True, "message": "Invalid payload"}), 500
         
-        guest = service.get_guest(r["guest_id"])
+        # TODO: Test to make sure this UID lock works.
+        guest = service.get_guest(r["email"], user_id=uid)
         if not guest:
             return response({"error": True, "message": "Unknown guest"}), 500
         
