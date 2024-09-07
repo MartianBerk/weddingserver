@@ -173,3 +173,7 @@ class UserData(IUserData):
             self._permissions = []
 
         return self._permissions
+    
+    @property
+    def acl_resource_id(self):
+        return None
