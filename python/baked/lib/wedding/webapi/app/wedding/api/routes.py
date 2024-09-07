@@ -3,6 +3,7 @@ from typing import *
 from baked.lib.accesscontrol.error import InvalidPassword, KeyNotSet, InvalidKey
 from baked.lib.accesscontrol.webapi.useraccess import UserAccess
 from baked.lib.webapi import request, response
+from baked.lib.wedding.model.guest import Guest
 from baked.lib.wedding.service.weddingservice import WeddingService
 
 from .. import wedding
@@ -44,6 +45,31 @@ def auth():
 
     except Exception:
         return response({"error": True, "message": f"Something Went Wrong"}), 500
+    
+
+@wedding.route("/guest", methods=["GET", "POST"], permissions=["ADMIN"])
+def guest():
+    service = WeddingService()
+
+    if request.method == "POST":
+        body = request.json
+        for key in ("firstname", "lastname", "email", "user_id", "invite",):
+            if key not in body:
+                return response({"error": True, "message": "Invalid payload"}), 500
+        
+        all_guests = service.list_guests()
+        guest = Guest(id=len(all_guests) + 1, **body)
+        service.create_guest(guest)
+
+        return response({"guest": guest.to_dict()}), 200
+
+    if request.method == "GET":
+        guest_id = request.args.get("id")
+        if not guest_id:
+            return response({"error": True, "message": "Invalid request"}), 500
+
+        guest: Guest = service.get_guest(guest_id)
+        return response({"guest": guest.to_dict()}), 200
 
 
 @wedding.route("/rsvp", methods=["POST"])

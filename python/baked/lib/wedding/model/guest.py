@@ -18,7 +18,7 @@ class Guest(Model):
 
     @classmethod
     def optional_attributes(cls):
-        return []
+        return ["rsvp"]
 
     @classmethod
     def auto_attributes(cls):

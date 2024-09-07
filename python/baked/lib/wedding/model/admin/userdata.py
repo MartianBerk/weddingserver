@@ -152,14 +152,6 @@ class UserData(IUserData):
         return self._last_login
 
     @property
-    def player_id(self):
-        return self._player_id
-
-    @property
-    def qatar_hero_player_id(self):
-        return self._qatar_hero_player_id
-
-    @property
     def reset_pwd_token_hash(self):
         return self._reset_pwd_token_hash
 
