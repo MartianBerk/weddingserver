@@ -9,7 +9,7 @@ class Guest(Model):
         "invite": str,
         "lastname": str,
         "user_id": int,
-        "rsvp": bool
+        "rsvp": str
     }
 
     @classmethod
@@ -84,7 +84,7 @@ class Guest(Model):
     
     @property
     def rsvp(self):
-        return self._rsvp or False
+        return self._rsvp
     
     @rsvp.setter
     def rsvp(self, value):

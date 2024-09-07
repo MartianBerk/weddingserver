@@ -44,7 +44,7 @@ class WeddingSetup(AbstractSetup):
         uid = len(user_service.list()) + 1
 
         user_data = UserData(key=key,
-                             pwd_hash=encrypt(key, hash_string("ashley&martin14E17!")),
+                             pwd_hash=encrypt(key, hash_string(self._config["admin_password"])),
                              pwd_last_updated=datetime.now())
 
         user = User(id=uid, account="admin", firstname="martin", lastname="baker", email="baker.bsc@gmail.com", user_id="baker.bsc@gmail.com", data=user_data)
@@ -58,4 +58,4 @@ class WeddingSetup(AbstractSetup):
         user_service.create(user)
 
     def get_admin_user_id(self):
-        return "user_id", "baker.bsc@gmail.com"
+        return "email", "baker.bsc@gmail.com"
