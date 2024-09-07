@@ -1,0 +1,19 @@
+# pycache
+/**/__pycache__/
+/**/*.pyc
+
+# tests
+/pythontest
+!/pythontest/**/test_*.py
+!/pythontest/add-inits
+!/pythontest/pypath
+!/pythontest/run-tests
+
+# virtualenv
+.venv
+
+# VS Code
+/.vscode
+
+# Mac
+.DS_Store
