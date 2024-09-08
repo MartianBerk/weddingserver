@@ -39,8 +39,17 @@ class WeddingService:
 
         return ColumnModelFactory.get(self._driver)(columns) 
     
-    def list_guests(self):
-        guests = self._db.get(self._table, self._get_column_model())
+    def list_guests(self, user_id: Optional[int] = None):
+        filter_model = None
+        if user_id:
+            filters = {"user_id": user_id}
+            column_model = self._get_column_model(filters=filters)
+
+            filter_class = FilterFactory.get(self._driver)
+            filters = [filter_class(c, "equalto") for c in column_model.columns]
+            filter_model = AndFilterModel(filters)
+
+        guests = self._db.get(self._table, self._get_column_model(), filter_model=filter_model)
         return [Guest(**g) for g in guests]
 
     def get_guest(self, email: str, user_id: Optional[int] = None) -> Union[Guest, None]:
@@ -61,7 +70,7 @@ class WeddingService:
         return Guest(**guest[0])
     
     def create_guest(self, guest: Guest) -> Guest:
-        if guest.invite.upper() not in self._valid_rsvp[:-2]:
+        if guest.invite.upper() not in self._valid_rsvp[:-1]:
             raise ValueError("Guest has invalid invite")
 
         if self.get_guest(guest.email):
@@ -75,6 +84,9 @@ class WeddingService:
         
     def rsvp(self, guest: Guest, rsvp: str):
         if rsvp.upper() not in self._valid_rsvp:
+            raise ValueError("Invalid RSVP value")
+        
+        if self._valid_rsvp.index(rsvp.upper()) < self._valid_rsvp.index(guest.invite.upper()):
             raise ValueError("Invalid RSVP value")
 
         guest.rsvp = rsvp

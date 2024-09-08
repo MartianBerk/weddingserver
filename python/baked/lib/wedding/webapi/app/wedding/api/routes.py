@@ -18,7 +18,7 @@ def index():
 def auth():
     body: Dict = request.json
     if "token" not in body or "email" not in body:
-        return response({"error": True, "message": "Invalid payload"}), 500
+        return response({"error": True, "message": "I won't accept funny business"}), 500
     
     try:
         # Having given each guest a QR code containing a token, we auto-authenticate for them.
@@ -44,7 +44,7 @@ def auth():
         return response({"error": True, "message": "Invalid Credentials"}), 403
 
     except Exception:
-        return response({"error": True, "message": f"Something Went Wrong"}), 500
+        return response({"error": True, "message": f"I won't accept funny business"}), 500
     
 
 @wedding.route("/guest", methods=["GET", "POST"], permissions=["ADMIN"])
@@ -55,12 +55,17 @@ def guest():
         body = request.json
         for key in ("firstname", "lastname", "email", "user_id", "invite",):
             if key not in body:
-                return response({"error": True, "message": "Invalid payload"}), 500
+                return response({"error": True, "message": "I won't accept funny business"}), 500
         
-        guest = Guest(**body)
-        service.create_guest(guest)
+        try:
+            guest = Guest(**body)
+            service.create_guest(guest)
 
-        return response({"guest": guest.to_dict()}), 200
+            return response({"guest": guest.to_dict()}), 200
+        
+        except Exception as e:
+            print(e)
+            return response({"error": True, "message": "I won't accept funny business"}), 500
 
     if request.method == "GET":
         email = request.args.get("email")
@@ -72,33 +77,44 @@ def guest():
         return response({"guest": guest.to_dict() if guest else {}}), 200
 
 
-@wedding.route("/rsvp", methods=["POST"])
+@wedding.route("/rsvp", methods=["GET", "POST"])
 def rsvp():
-    body: Dict = request.json
-    if "rsvp" not in body:
-        return response({"error": True, "message": "Invalid payload"}), 500
-    
     # Locked URI, must have supplied to have gotten this far, unless tampering.
     uid = request.cookies.get("bkuid")
+    if not uid:
+        return response({"error": True, "message": "I won't accept funny business"}), 500
     
-    guest_rsvps = []
     service = WeddingService()
-    
-    for r in body["rsvp"]:
-        if "email" not in r or "rsvp" not in r:
-            return response({"error": True, "message": "Invalid payload"}), 500
-        
-        if r["rsvp"].upper() not in service.valid_rsvp:
-            return response({"error": True, "message": "Invalid payload"}), 500
-        
-        # TODO: Test to make sure this UID lock works.
-        guest = service.get_guest(r["email"], user_id=uid)
-        if not guest:
-            return response({"error": True, "message": "Unknown guest"}), 500
-        
-        guest_rsvps.append((guest, r["rsvp"],))
 
-    for guest_rsvp in guest_rsvps:
-        service.rsvp(guest_rsvp[0], guest_rsvp[1])
+    if request.method == "GET":
+        guests = service.list_guests(user_id=uid)
+        return response({"guests": [g.to_dict(public_only=True) for g in guests]}), 200
 
-    return response({"guests": [g[0].to_dict(public_only=True)] for g in guest_rsvps}), 200
+    if request.method == "POST":
+        body: Dict = request.json
+        if "rsvp" not in body:
+            return response({"error": True, "message": "I won't accept funny business"}), 500
+        
+        guest_rsvps = []
+        for r in body["rsvp"]:
+            if "email" not in r or "rsvp" not in r:
+                return response({"error": True, "message": "I won't accept funny business"}), 500
+            
+            if r["rsvp"].upper() not in service.valid_rsvp:
+                return response({"error": True, "message": "I won't accept funny business"}), 500
+            
+            guest = service.get_guest(r["email"], user_id=uid)
+            if not guest:
+                return response({"error": True, "message": "I won't accept funny business"}), 500
+            
+            guest_rsvps.append((guest, r["rsvp"],))
+
+        try:
+            for guest_rsvp in guest_rsvps:
+                service.rsvp(guest_rsvp[0], guest_rsvp[1])
+
+            return response({"guests": [g[0].to_dict(public_only=True)] for g in guest_rsvps}), 200
+
+        except Exception as e:
+            print(e)
+            return response({"error": True, "message": "I won't accept funny business"}), 500
