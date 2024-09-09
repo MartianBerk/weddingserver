@@ -3,13 +3,12 @@ from baked.lib.model import Model
 
 class Guest(Model):
     _attributes = {
-        "id": int,
         "email": str,
         "firstname": str,
         "invite": str,
         "lastname": str,
         "user_id": int,
-        "rsvp": bool
+        "rsvp": str
     }
 
     @classmethod
@@ -18,7 +17,7 @@ class Guest(Model):
 
     @classmethod
     def optional_attributes(cls):
-        return []
+        return ["rsvp"]
 
     @classmethod
     def auto_attributes(cls):
@@ -46,21 +45,18 @@ class Guest(Model):
                 "firstname": self.firstname,
                 "lastname": self.lastname,
                 "invite": self.invite,
-                "rsvp": self.rsvp
+                "rsvp": self.rsvp,
+                "email": self.email
             }
 
         return {
-            "id": self.id,
             "firstname": self.firstname,
             "lastname": self.lastname,
             "invite": self.invite,
             "rsvp": self.rsvp,
-            "user_id": self.user_id
+            "user_id": self.user_id,
+            "email": self.email
         }
-
-    @property
-    def id(self):
-        return self._id
     
     @property
     def email(self):
@@ -84,7 +80,7 @@ class Guest(Model):
     
     @property
     def rsvp(self):
-        return self._rsvp or False
+        return self._rsvp
     
     @rsvp.setter
     def rsvp(self, value):

@@ -1,5 +1,5 @@
 from baked.lib.admin.model.iuser import IUser
-from baked.lib.supersix.model.admin.userdata import UserData
+from baked.lib.wedding.model.admin.userdata import UserData
 
 
 class User(IUser):
