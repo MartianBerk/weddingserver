@@ -82,7 +82,7 @@ class WeddingService:
 
         return guest
         
-    def rsvp(self, guest: Guest, rsvp: str):
+    def rsvp(self, guest: Guest, rsvp: str, diet: str):
         if rsvp.upper() not in self._valid_rsvp:
             raise ValueError("Invalid RSVP value")
         
@@ -90,6 +90,7 @@ class WeddingService:
             raise ValueError("Invalid RSVP value")
 
         guest.rsvp = rsvp
+        guest.diet = diet
         guest_payload: Dict = guest.to_dict()
 
         self._db.update_where(

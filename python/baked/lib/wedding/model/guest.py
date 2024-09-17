@@ -8,7 +8,8 @@ class Guest(Model):
         "invite": str,
         "lastname": str,
         "user_id": int,
-        "rsvp": str
+        "rsvp": str,
+        "diet": str
     }
 
     @classmethod
@@ -17,7 +18,7 @@ class Guest(Model):
 
     @classmethod
     def optional_attributes(cls):
-        return ["rsvp"]
+        return ["rsvp", "diet"]
 
     @classmethod
     def auto_attributes(cls):
@@ -25,7 +26,7 @@ class Guest(Model):
 
     @classmethod
     def public_attributes(cls):
-        return ["firstname", "lastname", "rsvp"]
+        return ["firstname", "lastname", "rsvp", "diet"]
 
     @classmethod
     def get_sql_datatype(cls, item):
@@ -46,7 +47,8 @@ class Guest(Model):
                 "lastname": self.lastname,
                 "invite": self.invite,
                 "rsvp": self.rsvp,
-                "email": self.email
+                "email": self.email,
+                "diet": self.diet
             }
 
         return {
@@ -55,7 +57,8 @@ class Guest(Model):
             "invite": self.invite,
             "rsvp": self.rsvp,
             "user_id": self.user_id,
-            "email": self.email
+            "email": self.email,
+            "diet": self.diet
         }
     
     @property
@@ -85,3 +88,11 @@ class Guest(Model):
     @rsvp.setter
     def rsvp(self, value):
         self._rsvp = value
+
+    @property
+    def diet(self):
+        return self._diet
+    
+    @diet.setter
+    def diet(self, value):
+        self._diet = value

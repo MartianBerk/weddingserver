@@ -96,6 +96,7 @@ def rsvp():
             return response({"error": True, "message": "I won't accept funny business"}), 500
         
         guest_rsvps = []
+        r: Dict = None
         for r in body["rsvp"]:
             if "email" not in r or "rsvp" not in r:
                 return response({"error": True, "message": "I won't accept funny business"}), 500
@@ -106,12 +107,14 @@ def rsvp():
             guest = service.get_guest(r["email"], user_id=uid)
             if not guest:
                 return response({"error": True, "message": "I won't accept funny business"}), 500
+            elif guest.rsvp:
+                return response({"error": True, "message": "No backsies"}), 500
             
-            guest_rsvps.append((guest, r["rsvp"],))
+            guest_rsvps.append((guest, r["rsvp"], r.get("diet", ""),))
 
         try:
             for guest_rsvp in guest_rsvps:
-                service.rsvp(guest_rsvp[0], guest_rsvp[1])
+                service.rsvp(guest_rsvp[0], guest_rsvp[1], guest_rsvp[2])
 
             return response({"guests": [g[0].to_dict(public_only=True)] for g in guest_rsvps}), 200
 
