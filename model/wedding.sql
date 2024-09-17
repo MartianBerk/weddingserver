@@ -4,5 +4,6 @@ CREATE TABLE guests (
     invite TEXT NOT NULL,  -- CEREMONY or EVENING
     lastname TEXT NOT NULL,
     user_id INTEGER NOT NULL,
-    rsvp TEXT NULL
+    rsvp TEXT NULL,
+    diet TEXT NULL
 );
