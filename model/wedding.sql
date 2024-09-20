@@ -5,5 +5,6 @@ CREATE TABLE guests (
     lastname TEXT NOT NULL,
     user_id INTEGER NOT NULL,
     rsvp TEXT NULL,
-    diet TEXT NULL
+    diet TEXT NULL,
+    location TEXT NOT NULL
 );

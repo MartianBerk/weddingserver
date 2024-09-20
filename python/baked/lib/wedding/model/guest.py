@@ -9,7 +9,8 @@ class Guest(Model):
         "lastname": str,
         "user_id": int,
         "rsvp": str,
-        "diet": str
+        "diet": str,
+        "location": str
     }
 
     @classmethod
@@ -26,7 +27,7 @@ class Guest(Model):
 
     @classmethod
     def public_attributes(cls):
-        return ["firstname", "lastname", "rsvp", "diet"]
+        return ["firstname", "lastname", "rsvp", "diet", "location"]
 
     @classmethod
     def get_sql_datatype(cls, item):
@@ -48,7 +49,8 @@ class Guest(Model):
                 "invite": self.invite,
                 "rsvp": self.rsvp,
                 "email": self.email,
-                "diet": self.diet
+                "diet": self.diet,
+                "location": self.location
             }
 
         return {
@@ -58,7 +60,8 @@ class Guest(Model):
             "rsvp": self.rsvp,
             "user_id": self.user_id,
             "email": self.email,
-            "diet": self.diet
+            "diet": self.diet,
+            "location": self.location
         }
     
     @property
@@ -80,6 +83,10 @@ class Guest(Model):
     @property
     def user_id(self):
         return self._user_id
+    
+    @property
+    def location(self):
+        return self._location
     
     @property
     def rsvp(self):

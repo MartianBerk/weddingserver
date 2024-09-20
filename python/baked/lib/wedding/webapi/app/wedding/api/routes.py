@@ -53,7 +53,7 @@ def guest():
 
     if request.method == "POST":
         body = request.json
-        for key in ("firstname", "lastname", "email", "user_id", "invite",):
+        for key in ("firstname", "lastname", "email", "user_id", "invite", "location"):
             if key not in body:
                 return response({"error": True, "message": "I won't accept funny business"}), 500
         
