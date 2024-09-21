@@ -5,22 +5,7 @@
         "values": ["1", "0"]
     },
     {
-        "name": "DETAILS",
-        "type": "switch",
-        "values": ["1", "0"]
-    },
-    {
         "name": "GUEST",
-        "type": "switch",
-        "values": ["1", "0"]
-    },
-    {
-        "name": "CEREMONY",
-        "type": "switch",
-        "values": ["1", "0"]
-    },
-    {
-        "name": "EVENING",
         "type": "switch",
         "values": ["1", "0"]
     }
