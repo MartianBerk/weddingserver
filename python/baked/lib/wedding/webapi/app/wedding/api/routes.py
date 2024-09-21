@@ -53,7 +53,7 @@ def guest():
 
     if request.method == "POST":
         body = request.json
-        for key in ("firstname", "lastname", "email", "user_id", "invite",):
+        for key in ("firstname", "lastname", "email", "user_id", "invite", "location"):
             if key not in body:
                 return response({"error": True, "message": "I won't accept funny business"}), 500
         
@@ -77,7 +77,7 @@ def guest():
         return response({"guest": guest.to_dict() if guest else {}}), 200
 
 
-@wedding.route("/rsvp", methods=["GET", "POST"])
+@wedding.route("/rsvp", methods=["GET", "POST"], permissions=["GUEST"])
 def rsvp():
     # Locked URI, must have supplied to have gotten this far, unless tampering.
     uid = request.cookies.get("bkuid")
