@@ -1,7 +1,7 @@
 {
     "cookie_expiry_hours": 1000,
-    "access_token_expiry_hours": 24,
-    "refresh_token_expiry_hours": 744,
+    "access_token_expiry_hours": 8766,
+    "refresh_token_expiry_hours": 1600,
     "password_complexity": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d!\"#$%&'()*+,-.\/:;<=>?@\\[\\]^_`{|}~]{8,}$",
     "email_driver": "smtp",
     "email_options": {
