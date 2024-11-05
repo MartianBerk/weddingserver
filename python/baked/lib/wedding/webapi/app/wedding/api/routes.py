@@ -22,7 +22,7 @@ def auth():
     
     try:
         # Having given each guest a QR code containing a token, we auto-authenticate for them.
-        acl = UserAccess.load_from_identity("email", body["email"])
+        acl = UserAccess.load_from_identity("email", body["email"].lower())
         acl.check_user()
 
         if not acl.authenticate():
