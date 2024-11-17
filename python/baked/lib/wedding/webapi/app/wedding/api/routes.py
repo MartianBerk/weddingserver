@@ -107,8 +107,8 @@ def rsvp():
             guest = service.get_guest(r["email"], user_id=uid)
             if not guest:
                 return response({"error": True, "message": "I won't accept funny business"}), 500
-            elif guest.rsvp:
-                return response({"error": True, "message": "No backsies"}), 500
+            # elif guest.rsvp:
+            #     return response({"error": True, "message": "No backsies"}), 500
             
             guest_rsvps.append((guest, r["rsvp"], r.get("diet", ""),))
 
